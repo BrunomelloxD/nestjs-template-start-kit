@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { IUserRepository } from "./use.repository.interface";
 import { PrismaService } from '../../../common/prisma/services/prisma.service';
-import { Prisma } from "../../../../generated/prisma";
+import { Prisma, User } from "../../../../generated/prisma";
 import { PaginatedResponseDto } from "src/common/dtos/paginated-response.dto";
 import { PaginationDto } from "../../../common/dtos/pagination.dto";
 import { UserResponseDto } from "../dtos/response/user-response.dto";
@@ -9,6 +9,18 @@ import { UserResponseDto } from "../dtos/response/user-response.dto";
 @Injectable()
 export class UserRepository implements IUserRepository {
     constructor(private readonly prismaService: PrismaService) { }
+    async update(id: string, data: Prisma.UserUpdateInput): Promise<User> {
+        return this.prismaService.user.update({
+            where: { id, deleted_at: null },
+            data,
+        });
+    }
+
+    async findByEmail(email: string, deleted_at_filter?: boolean): Promise<User | null> {
+        return await this.prismaService.user.findFirst({
+            where: { email, deleted_at: deleted_at_filter ? null : undefined }
+        });
+    }
 
     async findOne(id: string): Promise<UserResponseDto | null> {
         return await this.prismaService.user.findUnique({
@@ -67,9 +79,7 @@ export class UserRepository implements IUserRepository {
     async existsByEmail(email: string, deleted_at_filter?: boolean): Promise<boolean> {
         const deleted_at = deleted_at_filter === true ? { deleted_at: null } : {};
 
-        const user = (await this.prismaService.user.count({ where: { email, ...deleted_at } })) > 0;
-        console.log(`User with email ${email} exists: ${user} (deleted_at_filter: ${deleted_at_filter})`);
-        return user;
+        return (await this.prismaService.user.count({ where: { email, ...deleted_at } })) > 0;
     }
 
     async existsById(id: string, deleted_at_filter?: boolean): Promise<boolean> {

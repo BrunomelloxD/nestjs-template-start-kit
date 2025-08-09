@@ -1,14 +1,25 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Query } from "@nestjs/common";
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Put, Query } from "@nestjs/common";
 import { UserService } from "../services/user.service";
 import { PaginatedResponseDto } from "src/common/dtos/paginated-response.dto";
 import { PaginationDto } from "src/common/dtos/pagination.dto";
 import { CreateUserDto } from "../dtos/create-user.dto";
 import { UserResponseDto } from "../dtos/response/user-response.dto";
-import { ApiBadRequestResponse, ApiBody, ApiConflictResponse, ApiCreatedResponse, ApiNoContentResponse, ApiNotFoundResponse, ApiOkResponse, ApiOperation, ApiParam, ApiQuery } from "@nestjs/swagger";
+import { ApiBadRequestResponse, ApiBody, ApiConflictResponse, ApiCreatedResponse, ApiNoContentResponse, ApiNotFoundResponse, ApiOkResponse, ApiOperation, ApiParam, ApiQuery, ApiTags } from "@nestjs/swagger";
+import { Public } from "src/common/decorators/public.decorator";
+import { UpdateUserDto } from "../dtos/update-user.dto";
+import { User } from "generated/prisma";
+import { GetUserId } from "src/common/decorators/get-user-id.decorator";
 
+@ApiTags('Users')
 @Controller('users')
 export class UserController {
     constructor(private readonly userService: UserService) { }
+
+    @Put(':id')
+    @HttpCode(HttpStatus.NO_CONTENT)
+    update(@Param('id') id: string, @Body() data: UpdateUserDto, @GetUserId() userId: string): Promise<User> {
+        return this.userService.updateUserWithValidation(id, data, userId);
+    }
 
     @Get()
     @ApiOperation({
@@ -40,6 +51,7 @@ export class UserController {
         return this.userService.findAll(queryParams);
     }
 
+    @Public()
     @Post()
     @HttpCode(HttpStatus.CREATED)
     @ApiOperation({
