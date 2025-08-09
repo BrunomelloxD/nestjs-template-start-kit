@@ -5,6 +5,8 @@ import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { RecoveryPasswordDto } from "../dtos/recovery-password.dto";
 import { PasswordService } from "../services/password.service";
 import { Public } from "src/common/decorators/public.decorator";
+import { ResetPasswordDto } from "../dtos/reset-password.dto";
+import { VerifyRecoveryCodeDto } from "../dtos/verify-recovery-code.dto";
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -29,5 +31,25 @@ export class AuthController {
     @HttpCode(HttpStatus.OK)
     recoverPassword(@Body() data: RecoveryPasswordDto) {
         return this.passwordService.recoverPassword(data.email);
+    }
+
+
+    @Public()
+    @ApiOperation({ summary: 'Verificação de redefinição de senha' })
+    @ApiResponse({ status: HttpStatus.OK, description: 'Verificação realizada com sucesso' })
+    @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Código de redefinição inválido' })
+    @Post('recover-password/verify')
+    async verifyRecoveryCode(@Body() data: VerifyRecoveryCodeDto) {
+        return this.passwordService.verifyRecoveryCode(data);
+    }
+
+    @Public()
+    @ApiOperation({ summary: 'Redefinição de senha' })
+    @ApiResponse({ status: HttpStatus.OK, description: 'Redefinição realizada com sucesso' })
+    @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Código de redefinição inválido' })
+    @HttpCode(HttpStatus.OK)
+    @Post('recover-password/reset')
+    async resetPassword(@Body() data: ResetPasswordDto) {
+        return this.passwordService.resetPassword(data);
     }
 }

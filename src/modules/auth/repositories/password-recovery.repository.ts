@@ -18,7 +18,7 @@ export class PasswordRecoveryRepository implements IPasswordRecoveryRepository {
 
     async findByRecoveryCode(code: string, user_id: string): Promise<boolean> {
         const passwordResetCode = await this.prisma.passwordResetCode.findFirst({
-            where: { code, user_id, expires_at: { gt: new Date() } },
+            where: { code, user_id, used: false, expires_at: { gte: new Date() } },
         });
 
         return !!passwordResetCode;
