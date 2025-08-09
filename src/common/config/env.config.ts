@@ -6,7 +6,6 @@ dotenv.config({ path: path.join(process.cwd(), '.env') });
 export const server = {
     config: {
         port: process.env.PORT ? +process.env.PORT : 3000,
-        base_url: process.env.BASE_URL,
         name: process.env.APP_NAME || 'nestjs-template-start-kit',
     }
 };

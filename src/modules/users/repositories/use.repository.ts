@@ -9,6 +9,7 @@ import { UserResponseDto } from "../dtos/response/user-response.dto";
 @Injectable()
 export class UserRepository implements IUserRepository {
     constructor(private readonly prismaService: PrismaService) { }
+
     async update(id: string, data: Prisma.UserUpdateInput): Promise<User> {
         return this.prismaService.user.update({
             where: { id, deleted_at: null },
@@ -73,7 +74,10 @@ export class UserRepository implements IUserRepository {
     }
 
     async create(data: Prisma.UserCreateInput): Promise<UserResponseDto> {
-        return this.prismaService.user.create({ data, select: { id: true, name: true, email: true, created_at: true, updated_at: true } });
+        return this.prismaService.user.create({
+            data,
+            select: { id: true, name: true, email: true, created_at: true, updated_at: true }
+        });
     }
 
     async existsByEmail(email: string, deleted_at_filter?: boolean): Promise<boolean> {

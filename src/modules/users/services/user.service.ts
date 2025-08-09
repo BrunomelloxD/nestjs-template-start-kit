@@ -3,7 +3,7 @@ import { Prisma, User } from "generated/prisma";
 import { PaginatedResponseDto } from "src/common/dtos/paginated-response.dto";
 import { PaginationDto } from "src/common/dtos/pagination.dto";
 import { UserRepository } from "../repositories/use.repository";
-import * as bcrypt from 'bcrypt';
+import { hash } from 'bcrypt';
 import { security } from "src/common/config/env.config";
 import { UserResponseDto } from "../dtos/response/user-response.dto";
 import { UpdateUserDto } from "../dtos/update-user.dto";
@@ -62,7 +62,7 @@ export class UserService {
             throw new ConflictException(`User with email ${data.email} already exists.`);
         }
 
-        const hashedPassword = await bcrypt.hash(data.password, security.bcrypt.saltRounds);
+        const hashedPassword = await hash(data.password, security.bcrypt.saltRounds);
         data.password = hashedPassword;
 
         return this.userRepository.create(data);

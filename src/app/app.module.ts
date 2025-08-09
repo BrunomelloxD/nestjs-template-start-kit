@@ -16,7 +16,8 @@ import { UserModule } from 'src/modules/users/user.module';
           limit: 3,
         },
       ],
-    }),],
+    }),
+  ],
   providers: [
     JwtService,
     {
