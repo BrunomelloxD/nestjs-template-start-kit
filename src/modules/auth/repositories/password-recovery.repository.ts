@@ -6,12 +6,12 @@ import { PrismaService } from "src/common/prisma/services/prisma.service";
 export class PasswordRecoveryRepository implements IPasswordRecoveryRepository {
     constructor(private readonly prisma: PrismaService) { }
 
-    async recoverPassword(code: string, expiresAt: Date, userId: string): Promise<void> {
+    async recoverPassword(code: string, expiresAt: Date, user_id: string): Promise<void> {
         await this.prisma.passwordResetCode.create({
             data: {
                 code,
                 expires_at: expiresAt,
-                user_id: userId,
+                user_id: user_id,
             },
         })
     }

@@ -1,12 +1,12 @@
 import { ConflictException, Injectable, NotFoundException } from "@nestjs/common";
-import { Prisma, User } from "generated/prisma";
 import { PaginatedResponseDto } from "src/common/dtos/paginated-response.dto";
 import { PaginationDto } from "src/common/dtos/pagination.dto";
-import { UserRepository } from "../repositories/use.repository";
+import { UserRepository } from "../repositories/user.repository";
 import { hash } from 'bcrypt';
 import { security } from "src/common/config/env.config";
 import { UserResponseDto } from "../dtos/response/user-response.dto";
 import { UpdateUserDto } from "../dtos/update-user.dto";
+import { Prisma, User } from "@prisma/client";
 
 @Injectable()
 export class UserService {

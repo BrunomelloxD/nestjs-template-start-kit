@@ -4,7 +4,6 @@ import { AuthResponse } from "../types/auth.types";
 import { UserService } from "src/modules/users/services/user.service";
 import { TokenService } from "./token.service";
 import { compare } from 'bcrypt';
-import { User } from "generated/prisma";
 
 @Injectable()
 export class AuthService {

@@ -7,8 +7,8 @@ import { UserResponseDto } from "../dtos/response/user-response.dto";
 import { ApiBadRequestResponse, ApiBody, ApiConflictResponse, ApiCreatedResponse, ApiNoContentResponse, ApiNotFoundResponse, ApiOkResponse, ApiOperation, ApiParam, ApiQuery, ApiTags } from "@nestjs/swagger";
 import { Public } from "src/common/decorators/public.decorator";
 import { UpdateUserDto } from "../dtos/update-user.dto";
-import { User } from "generated/prisma";
 import { GetUserId } from "src/common/decorators/get-user-id.decorator";
+import { User } from "@prisma/client";
 
 @ApiTags('Users')
 @Controller('users')
@@ -16,6 +16,46 @@ export class UserController {
     constructor(private readonly userService: UserService) { }
 
     @Put(':id')
+    @ApiOperation({
+        summary: 'Update user information',
+        description: 'Update user details by ID'
+    })
+    @ApiParam({
+        name: 'id',
+        type: 'string',
+        description: 'User ID',
+        example: '550e8400-e29b-41d4-a716-446655440000'
+    })
+    @ApiBody({
+        type: UpdateUserDto,
+        description: 'User update data',
+        examples: {
+            example1: {
+                summary: 'Basic user update',
+                description: 'Example of updating a user\'s name and email',
+                value: {
+                    name: 'Jane Doe',
+                    email: 'TlWYK@example.com'
+                }
+            }
+        }
+    })
+    @ApiCreatedResponse({
+        description: 'User updated successfully',
+        type: UserResponseDto
+    })
+    @ApiConflictResponse({
+        description: 'User with this email already exists'
+    })
+    @ApiNotFoundResponse({
+        description: 'User not found or does not match the authenticated user'
+    })
+    @ApiBadRequestResponse({
+        description: 'Invalid input data or user ID format'
+    })
+    @ApiNoContentResponse({
+        description: 'User updated successfully'
+    })
     @HttpCode(HttpStatus.NO_CONTENT)
     update(@Param('id') id: string, @Body() data: UpdateUserDto, @GetUserId() userId: string): Promise<User> {
         return this.userService.updateUserWithValidation(id, data, userId);

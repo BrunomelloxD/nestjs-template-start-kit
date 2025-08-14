@@ -1,10 +1,10 @@
 import { Injectable } from "@nestjs/common";
-import { IUserRepository } from "./use.repository.interface";
+import { IUserRepository } from "./user.repository.interface";
 import { PrismaService } from '../../../common/prisma/services/prisma.service';
-import { Prisma, User } from "../../../../generated/prisma";
 import { PaginatedResponseDto } from "src/common/dtos/paginated-response.dto";
 import { PaginationDto } from "../../../common/dtos/pagination.dto";
 import { UserResponseDto } from "../dtos/response/user-response.dto";
+import { Prisma, User } from "@prisma/client";
 
 @Injectable()
 export class UserRepository implements IUserRepository {
@@ -43,12 +43,12 @@ export class UserRepository implements IUserRepository {
         })
     }
 
-    async findAll({ page = 1, limit = 10 }: PaginationDto): Promise<PaginatedResponseDto<UserResponseDto>> {
+    async findAll({ page = 1, limit = 10, search }: PaginationDto): Promise<PaginatedResponseDto<UserResponseDto>> {
         const [users, total] = await this.prismaService.$transaction([
             this.prismaService.user.findMany({
                 skip: (page - 1) * limit,
                 take: limit,
-                where: { deleted_at: null },
+                where: { deleted_at: null, name: { contains: search, mode: 'insensitive' } },
                 select: {
                     id: true,
                     name: true,

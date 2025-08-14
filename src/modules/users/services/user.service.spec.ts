@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ConflictException, NotFoundException } from '@nestjs/common';
 import { UserService } from './user.service';
 import * as bcrypt from 'bcrypt';
-import { UserRepository } from '../repositories/use.repository';
+import { UserRepository } from '../repositories/user.repository';
 
 jest.mock('bcrypt', () => ({
     hash: jest.fn(),

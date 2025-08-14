@@ -13,7 +13,7 @@ import { UserModule } from 'src/modules/users/user.module';
       throttlers: [
         {
           ttl: 60000,
-          limit: 3,
+          limit: 10,
         },
       ],
     }),
