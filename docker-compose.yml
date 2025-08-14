@@ -6,11 +6,7 @@ services:
       context: .
       dockerfile: Dockerfile
     container_name: nest-api
-    command: >
-      sh -c "
-        npx prisma migrate dev --name init &&
-        npm run start:dev
-      "
+    command: npm run start:dev
     ports:
       - "3000:3000"
     volumes:
@@ -23,6 +19,21 @@ services:
     networks:
       - app-network
 
+  nest-api-migrate:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: nest-api-migrate
+    command: npx prisma migrate deploy
+    depends_on:
+      database:
+        condition: service_healthy
+    env_file:
+      - .env
+    networks:
+      - app-network
+    restart: 'no'
+
   database:
     image: postgres:13
     container_name: database
@@ -30,17 +41,17 @@ services:
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
-      POSTGRES_DB: template
+      POSTGRES_DB: ${POSTGRES_DB:-template}
     ports:
       - "5432:5432"
     volumes:
       - postgres:/var/lib/postgresql/data
     healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U ${POSTGRES_USER:-postgres}']
-      interval: 10s
-      timeout: 5s
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-template}"]
+      interval: 5s
+      timeout: 3s
       retries: 5
-      start_period: 10s
+      start_period: 5s
     networks:
       - app-network
 
